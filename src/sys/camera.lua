@@ -24,6 +24,8 @@ function camera:init()
   self.zooming = false
   self.rotating = false
   self.tween_target = nil
+
+  self:change_zoom(1)
 end
 
 function camera:reset()
