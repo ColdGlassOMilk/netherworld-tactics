@@ -7,7 +7,7 @@ camera = {
   rot_tween = 0,
   zoom = 2,
   zoom_tween = 2,
-  zoom_levels = {1, 1.5, 2},
+  zoom_levels = {1, 2, 3},  -- integer values only for clean pixel scaling
   zooming = false,
   rotating = false,
   tween_target = nil,
@@ -24,8 +24,6 @@ function camera:init()
   self.zooming = false
   self.rotating = false
   self.tween_target = nil
-
-  self:change_zoom(1)
 end
 
 function camera:reset()
