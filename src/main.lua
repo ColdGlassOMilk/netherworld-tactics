@@ -1,0 +1,15 @@
+
+function _init()
+  game:init()
+end
+
+function _update()
+  input:update()
+  tween:update()
+  game:update()
+end
+
+function _draw()
+  cls(8)
+  game:draw()
+end
