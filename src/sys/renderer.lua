@@ -74,26 +74,68 @@ function renderer:draw_tile(x, y)
   local col = tile.col
   local is_move = grid:tile_in_list(x, y, game.move_tiles or {})
   local is_attack = grid:tile_in_list(x, y, game.attack_tiles or {})
+
   if is_move then col = 12
   elseif is_attack then col = 8 end
+
+  -- side shading
+  local side_l, side_r = 0, 0
+  if col == 1 then side_l, side_r = 0, 0
+  elseif col == 2 then side_l, side_r = 1, 0
+  elseif col == 13 then side_l, side_r = 2, 1
+  elseif col == 14 then side_l, side_r = 13, 2
+  elseif col == 12 then side_l, side_r = 1, 0
+  elseif col == 8 then side_l, side_r = 2, 0
+  else side_l, side_r = max(0, col - 1), max(0, col - 2) end
 
   -- sides
   if h > 0 then
     for i = 0, hpx do
-      line(sx - hw, sy + i, sx, sy + hh + i, max(0, col - 1))
-      line(sx, sy + hh + i, sx + hw, sy + i, max(0, col - 2))
+      line(sx - hw, sy + i, sx, sy + hh + i, side_l)
+      line(sx, sy + hh + i, sx + hw, sy + i, side_r)
     end
   end
 
   -- top face
   diamond(sx, sy, hw, hh, col)
 
-  -- pulsing inner for special tiles
-  if not is_move and not is_attack and (tile.type == "spawn" or tile.type == "goal") then
-    local pulse = sin(time() * 2) > 0
-    local c1, c2 = 12, 1
-    if tile.type == "goal" then c1, c2 = 9, 8 end
-    diamond(sx, sy, hw * 0.5, hh * 0.5, pulse and c1 or c2)
+  -- pulsing glow for special tiles
+  if not is_move and not is_attack then
+    if tile.type == "spawn" then
+      -- ping-pong pulse: small -> full -> small -> off -> small -> ...
+      local t = (time() * 0.7) % 1  -- faster cycle
+      local phase
+      if t < 0.5 then
+        phase = t * 2  -- 0 to 1
+      else
+        phase = (1 - t) * 2  -- 1 to 0
+      end
+
+      if phase > 0.66 then
+        -- full: outer + inner
+        diamond(sx, sy, hw * 0.6, hh * 0.6, 13)
+        diamond(sx, sy, hw * 0.3, hh * 0.3, 12)
+      elseif phase > 0.33 then
+        -- just inner
+        diamond(sx, sy, hw * 0.3, hh * 0.3, 12)
+      end
+      -- else: nothing
+    elseif tile.type == "goal" then
+      local t = (time() * 0.7) % 1
+      local phase
+      if t < 0.5 then
+        phase = t * 2
+      else
+        phase = (1 - t) * 2
+      end
+
+      if phase > 0.66 then
+        diamond(sx, sy, hw * 0.6, hh * 0.6, 8)
+        diamond(sx, sy, hw * 0.3, hh * 0.3, 9)
+      elseif phase > 0.33 then
+        diamond(sx, sy, hw * 0.3, hh * 0.3, 9)
+      end
+    end
   end
 
   -- outline
@@ -103,10 +145,10 @@ function renderer:draw_tile(x, y)
   line(sx - hw, sy, sx, sy - hh, 0)
 
   if h > 0 then
-    line(sx - hw, sy, sx - hw, sy + hpx, 0)
-    line(sx + hw, sy, sx + hw, sy + hpx, 0)
-    line(sx - hw, sy + hpx, sx, sy + hh + hpx, 0)
-    line(sx, sy + hh + hpx, sx + hw, sy + hpx, 0)
+    line(sx - hw, sy, sx - hw, sy + hpx, outline_col)
+    line(sx + hw, sy, sx + hw, sy + hpx, outline_col)
+    line(sx - hw, sy + hpx, sx, sy + hh + hpx, outline_col)
+    line(sx, sy + hh + hpx, sx + hw, sy + hpx, outline_col)
   end
 end
 
@@ -115,25 +157,45 @@ function renderer:draw_unit(u)
   local sx, sy = camera:iso_pos(u.tx, u.ty, h)
   local z = camera:get_zoom_scale()
 
-  -- body outline
-  circfill(sx, sy - 4 * z, 3 * z + 1, 0)
-  -- head outline
-  circfill(sx, sy - 8 * z, 2 * z + 1, 0)
-  -- body
-  circfill(sx, sy - 4 * z, 3 * z, u.col)
-  -- head
-  circfill(sx, sy - 8 * z, 2 * z, u.col)
   -- shadow
-  ovalfill(sx - 2 * z, sy, sx + 2 * z, sy + 1 * z, 0)
+  ovalfill(sx - 4 * z, sy + 1, sx + 4 * z, sy + 3 * z, 0)
 
+  -- get sprite frame
+  local spr_id = sprites:get_sprite(u)
+
+  -- draw sprite centered, scaled
+  -- 16x16 sprites: 8 per row
+  local sw, sh = 16 * z, 16 * z
+  local spr_x = (spr_id % 8) * 16
+  local spr_y = flr(spr_id / 8) * 16
+
+  sspr(
+    spr_x, spr_y,  -- sprite position in sheet
+    16, 16,        -- source size
+    sx - sw/2, sy - sh,  -- dest position (centered, above shadow)
+    sw, sh         -- dest size
+  )
+
+  -- health bar (only if damaged) - slim version
   if u.hp < u.max_hp then
-    local bw, by = 8 * z, sy - 14 * z
-    rectfill(sx - bw/2, by, sx + bw/2, by + 2, 0)
-    rectfill(sx - bw/2, by, sx - bw/2 + bw * u.hp / u.max_hp, by + 2, u.team == "player" and 11 or 8)
+    local bw, by = 12 * z, sy - sh - 3 * z
+    -- border (black outline) - 3px total height
+    rectfill(sx - bw/2 - 1, by - 1, sx + bw/2 + 1, by + 1, 0)
+    -- background - 1px inner
+    line(sx - bw/2, by, sx + bw/2, by, 5)
+    -- health fill - 1px
+    local hpcol = u.team == "player" and 11 or 8
+    local fill_w = bw * u.hp / u.max_hp
+    if fill_w > 0 then
+      line(sx - bw/2, by, sx - bw/2 + fill_w, by, hpcol)
+    end
   end
 
+  -- acted indicator
   if u.team == "player" and u.acted then
-    print("z", sx - 2, sy - 16 * z, 5)
+    local zy = sy - sh - 3 * z
+    print("z", sx - 1, zy, 5)
+    print("z", sx + 2, zy - 2, 6)
   end
 end
 

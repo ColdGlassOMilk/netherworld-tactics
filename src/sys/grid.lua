@@ -1,8 +1,8 @@
 -- grid system
 
 grid = {
-  w = 8,
-  h = 8,
+  w = 10,
+  h = 10,
   tile_w = 16,
   tile_h = 8,
   tiles = {},
@@ -20,6 +20,7 @@ function grid:generate()
   self.tiles = {}
 
   -- generate terrain with varying heights
+  -- netherworld palette: consistent colors per height
   for y = 0, self.h - 1 do
     self.tiles[y] = {}
     for x = 0, self.w - 1 do
@@ -28,22 +29,32 @@ function grid:generate()
       if r > 0.4 then h = 1 end
       if r > 0.75 then h = 2 end
 
+      -- consistent color per height level
+      local col
+      if h == 0 then
+        col = 1   -- dark blue (lowest)
+      elseif h == 1 then
+        col = 2   -- dark purple (mid)
+      else
+        col = 13  -- lavender (highest)
+      end
+
       self.tiles[y][x] = {
         height = h,
-        col = ({1, 2, 13})[h + 1], -- dark blue, dark purple, lavender
+        col = col,
         type = "normal"
       }
     end
   end
 
-  -- place spawn point
+  -- place spawn point - glowing blue
   self.spawn_x = flr(rnd(self.w))
   self.spawn_y = flr(rnd(self.h))
   self.tiles[self.spawn_y][self.spawn_x].height = 0
   self.tiles[self.spawn_y][self.spawn_x].col = 1
   self.tiles[self.spawn_y][self.spawn_x].type = "spawn"
 
-  -- place goal (away from spawn)
+  -- place goal (away from spawn) - glowing red/orange
   local gx, gy
   repeat
     gx = flr(rnd(self.w))

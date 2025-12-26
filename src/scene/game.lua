@@ -205,9 +205,40 @@ function game:update()
   end
   camera:update()
   bindings:update()
+  sprites:update_all()
 end
 
 function game:draw()
+  -- secret palette swaps for netherworld vibe
+  -- PICO-8 secret palette (128-143):
+  -- 128: dark brown, 129: darker brown, 130: dark gray-green
+  -- 131: dark blue, 132: light indigo, 133: dark gray
+  -- 134: light peach, 135: tan, 136: dark red/maroon
+  -- 137: dark orange, 138: dark yellow, 139: dark green
+  -- 140: dark cyan, 141: medium blue, 142: light purple
+  -- 143: pink-gray
+
+  -- deep netherworld purples
+  pal(1, 131, 1)   -- dark blue -> darker blue
+  pal(2, 129, 1)   -- dark purple -> deep brown-purple
+  pal(5, 133, 1)   -- dark gray -> darker gray
+
+  -- ethereal highlights
+  pal(13, 132, 1)  -- lavender -> soft indigo
+  pal(14, 143, 1)  -- pink -> muted pink
+  pal(15, 134, 1)  -- peach -> light peach
+
+  -- fiery accents
+  pal(8, 136, 1)   -- red -> deep crimson
+  pal(9, 137, 1)   -- orange -> burnt orange
+  pal(10, 138, 1)  -- yellow -> gold
+
+  -- ghostly enemies
+  pal(11, 139, 1)  -- green -> murky green
+
+  -- cyan move tiles stay vibrant
+  pal(12, 140, 1)  -- blue -> teal
+
   cls(0)
   renderer:draw_all()
   ui:draw()
@@ -215,4 +246,7 @@ function game:draw()
   if self.action_menu then self.action_menu:draw() end
   if self.deploy_menu then self.deploy_menu:draw() end
   if self.options_menu then self.options_menu:draw() end
+
+  -- reset palette
+  pal()
 end

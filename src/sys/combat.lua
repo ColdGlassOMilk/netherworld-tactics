@@ -30,23 +30,25 @@ function combat:do_attack(attacker, target, on_done)
   local dx = (target.x - attacker.x) * 0.3
   local dy = (target.y - attacker.y) * 0.3
 
+  -- play attack animation
+  sprites:play(attacker, "attack")
+
   tween:new(attacker, {tx = ox + dx, ty = oy + dy}, 6, {
     ease = tween.ease.out_quad,
     on_complete = function()
       target.hp -= dmg
       sfx(2)
 
-      -- build message
-      local msg = dmg .. " dmg!"
-      if chain_bonus > 0 then msg = msg .. " chain+" end
-      if height_diff > 0 then msg = msg .. " high+"
-      elseif height_diff < 0 then msg = msg .. " low-" end
-      game:msg(msg)
+      -- play hurt animation on target
+      sprites:play(target, "hurt", function()
+        sprites:play(target, "idle")
+      end)
 
       -- return animation
       tween:new(attacker, {tx = ox, ty = oy}, 8, {
         ease = tween.ease.out_back,
         on_complete = function()
+          sprites:play(attacker, "idle")
           local transitioned = units:check_dead()
           if not transitioned and on_done then
             on_done()

@@ -8,35 +8,41 @@ function units:init()
   self.list = {}
 
   -- create player units
-  -- vex: melee warrior
-  add(self.list, {
+  -- vex: melee warrior - fiery orange/red
+  local vex = {
     name = "vex",
     team = "player",
     hp = 20, max_hp = 20,
     atk = 5, def = 2, spd = 10,
-    move = 4, range = 1,
-    col = 8,
+    move = 5, range = 1,
+    col = 9,  -- orange
+    col2 = 10, -- yellow highlight
     x = -1, y = -1,
     tx = -1, ty = -1,
     deployed = false,
     acted = false,
     moved = false
-  })
+  }
+  sprites:init_unit(vex)
+  add(self.list, vex)
 
-  -- nyx: ranged mage
-  add(self.list, {
+  -- nyx: ranged mage - mystical pink/magenta
+  local nyx = {
     name = "nyx",
     team = "player",
     hp = 12, max_hp = 12,
     atk = 8, def = 0, spd = 8,
-    move = 3, range = 2,
-    col = 14,
+    move = 4, range = 2,
+    col = 14,  -- pink
+    col2 = 15, -- peach highlight
     x = -1, y = -1,
     tx = -1, ty = -1,
     deployed = false,
     acted = false,
     moved = false
-  })
+  }
+  sprites:init_unit(nyx)
+  add(self.list, nyx)
 end
 
 function units:at(x, y)
@@ -56,6 +62,7 @@ function units:spawn(x, y, data)
   for k, v in pairs(data) do
     unit[k] = v
   end
+  sprites:init_unit(unit)
   add(self.list, unit)
   return unit
 end
@@ -80,7 +87,8 @@ function units:spawn_enemies(floor)
       atk = 2 + flr(floor / 2),
       def = 0, spd = 6,
       move = 2, range = 1,
-      col = 12
+      col = 11,  -- green (ghostly)
+      col2 = 3   -- dark green
     })
   end
 end

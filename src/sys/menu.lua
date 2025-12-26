@@ -43,25 +43,35 @@ function menu:draw()
   local w = 44
   for _, item in pairs(self.items) do
     local lbl = type(item.label) == "function" and item.label() or item.label
-    w = max(w, #lbl * 4 + 12)
+    w = max(w, #lbl * 4 + 14)
   end
-  local h = #self.items * 10 + 4
+  local h = #self.items * 10 + 6
 
   -- clamp to screen
   local dx = mid(1, self.x, 127 - w)
   local dy = mid(1, self.y, 127 - h)
 
+  -- background with border
   rectfill(dx, dy, dx + w, dy + h, 0)
-  rect(dx, dy, dx + w, dy + h, 13)
+  rectfill(dx, dy, dx + w, dy + 1, 2)  -- top accent
+  rect(dx, dy, dx + w, dy + h, 2)
 
   for i, item in ipairs(self.items) do
     local lbl = type(item.label) == "function" and item.label() or item.label
-    local iy = dy + 4 + (i - 1) * 10
+    local iy = dy + 5 + (i - 1) * 10
     local enabled = not item.enabled or item.enabled()
-    local col = enabled and (i == self.sel and 7 or 6) or 5
+
     if i == self.sel then
-      print(">", dx + 2, iy, 8)
+      -- selection highlight bar
+      rectfill(dx + 1, iy - 1, dx + w - 1, iy + 7, 2)
+      local col = enabled and 10 or 5  -- yellow when selected
+      print(lbl, dx + 8, iy, col)
+      -- animated cursor
+      local cx = dx + 2 + sin(time() * 4) * 2
+      print(">", cx, iy, 9)
+    else
+      local col = enabled and 13 or 5  -- lavender / gray
+      print(lbl, dx + 8, iy, col)
     end
-    print(lbl, dx + 10, iy, col)
   end
 end

@@ -253,7 +253,6 @@ function actions:confirm_target()
   game.attack_tiles = {}
   game.phase = "select"
   bindings:bind_select()
-  game:msg("attack queued!")
   sfx(1)
 end
 
@@ -266,6 +265,16 @@ function actions:try_undo_move()
   local u = cursor:get_unit()
 
   if u and u.team == "player" and u.moved and not u.acted then
+    -- check if original position is now occupied by another unit
+    if u.orig_x != -1 and u.orig_y != -1 then
+      local blocker = units:at(u.orig_x, u.orig_y)
+      if blocker and blocker != u then
+        -- can't undo - someone else is there now
+        sfx(0)
+        return
+      end
+    end
+
     -- remove queued attacks for this unit
     for i = #game.action_queue, 1, -1 do
       if game.action_queue[i].attacker == u then
@@ -280,7 +289,6 @@ function actions:try_undo_move()
       u.tx, u.ty = -1, -1
       u.moved = false
       sfx(0)
-      game:msg("unit returned")
     else
       -- return to original position
       u.x = u.orig_x
@@ -289,7 +297,6 @@ function actions:try_undo_move()
       tween:cancel_all(u)
       tween:new(u, {tx = u.x, ty = u.y}, 10, {ease = tween.ease.out_quad})
       sfx(0)
-      game:msg("move undone")
     end
   end
 end
