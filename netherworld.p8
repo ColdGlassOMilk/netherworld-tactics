@@ -3,11 +3,33 @@ version 43
 __lua__
 -- netherworld tactics
 
+---------------
+-- entry point
+---------------
 #include src/main.lua
 
+----------
+-- system
+----------
 #include src/sys/input.lua
-#include src/sys/menu.lua
 #include src/sys/tween.lua
+#include src/sys/menu.lua
+#include src/sys/camera.lua
+#include src/sys/grid.lua
+#include src/sys/cursor.lua
+#include src/sys/units.lua
+#include src/sys/movement.lua
+#include src/sys/combat.lua
+#include src/sys/ai.lua
+#include src/sys/bindings.lua
+#include src/sys/actions.lua
+#include src/sys/renderer.lua
+#include src/sys/ui.lua
+
+----------
+-- scene
+----------
+#include src/scene/game.lua
 
 __gfx__
 00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000

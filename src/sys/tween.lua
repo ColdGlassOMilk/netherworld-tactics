@@ -7,6 +7,7 @@ tween = {
 tween.ease = {
   linear = function(t) return t end,
   out_quad = function(t) return 1 - (1 - t) * (1 - t) end,
+  in_quad = function(t) return t * t end,
   out_back = function(t)
     local c = 2.70158
     return 1 + c * (t - 1) ^ 3 + (c - 1) * (t - 1) ^ 2

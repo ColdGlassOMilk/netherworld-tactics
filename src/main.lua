@@ -1,3 +1,4 @@
+-- main
 
 function _init()
   game:init()
