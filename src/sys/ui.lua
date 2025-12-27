@@ -42,20 +42,20 @@ function ui:draw()
 end
 
 function ui:get_hint()
-  if game.phase == "select" then
+  if game.fsm.current == "select" then
     local cu = cursor:get_unit()
     if cu and cu.team == "player" and cu.moved and not cu.acted then
       return "❎mENU 🅾️uNDO"
     else
       return "❎sEL/mENU"
     end
-  elseif game.phase == "move" then
+  elseif game.fsm.current == "move" then
     return "❎mOVE 🅾️bACK"
-  elseif game.phase == "action" then
+  elseif game.fsm.current == "action" then
     return "❎sEL 🅾️bACK"
-  elseif game.phase == "target" then
+  elseif game.fsm.current == "target" then
     return "❎tARGET 🅾️bACK"
-  elseif game.phase == "gameover" then
+  elseif game.fsm.current == "gameover" then
     return "❎rETRY"
   end
   return ""

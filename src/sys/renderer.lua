@@ -2,8 +2,7 @@
 
 renderer = {}
 
--- helper: draw outlined line
-local function oline(x1, y1, x2, y2, col)
+function oline(x1, y1, x2, y2, col)
   line(x1-1, y1, x2-1, y2, 0)
   line(x1+1, y1, x2+1, y2, 0)
   line(x1, y1-1, x2, y2-1, 0)
@@ -11,8 +10,7 @@ local function oline(x1, y1, x2, y2, col)
   line(x1, y1, x2, y2, col)
 end
 
--- helper: draw filled diamond
-local function diamond(sx, sy, hw, hh, col)
+function diamond(sx, sy, hw, hh, col)
   for i = 0, hh do
     local w = hw * (hh - i) / hh
     line(sx - w, sy - i, sx + w, sy - i, col)
@@ -22,22 +20,17 @@ end
 
 function renderer:draw_all()
   local draw_list = {}
-
-  -- add tiles and units to draw list
   for y = 0, grid.h - 1 do
     for x = 0, grid.w - 1 do
       add(draw_list, {t = "tile", x = x, y = y, d = grid:get_tile_depth(x, y)})
     end
   end
-
   for u in all(units.list) do
     if u.x >= 0 then
       local ux, uy = flr(u.tx + 0.5), flr(u.ty + 0.5)
       add(draw_list, {t = "unit", u = u, d = grid:get_tile_depth(ux, uy) + 0.01})
     end
   end
-
-  -- sort by depth
   for i = 1, #draw_list - 1 do
     for j = i + 1, #draw_list do
       if draw_list[j].d < draw_list[i].d then
@@ -45,8 +38,6 @@ function renderer:draw_all()
       end
     end
   end
-
-  -- draw sorted
   for item in all(draw_list) do
     if item.t == "tile" then
       self:draw_tile(item.x, item.y)
@@ -54,12 +45,8 @@ function renderer:draw_all()
       self:draw_unit(item.u)
     end
   end
-
-  -- cursor
   self:draw_cursor()
-
-  -- markers when O held long enough
-  if bindings.show_markers then self:draw_markers() end
+  if game.show_markers then self:draw_markers() end
 end
 
 function renderer:draw_tile(x, y)
@@ -69,16 +56,11 @@ function renderer:draw_tile(x, y)
   local z = camera:get_zoom_scale()
   local hw, hh = (grid.tile_w / 2) * z, (grid.tile_h / 2) * z
   local hpx = h * 4 * z
-
-  -- determine color
   local col = tile.col
   local is_move = grid:tile_in_list(x, y, game.move_tiles or {})
   local is_attack = grid:tile_in_list(x, y, game.attack_tiles or {})
-
   if is_move then col = 12
   elseif is_attack then col = 8 end
-
-  -- side shading
   local side_l, side_r = 0, 0
   if col == 1 then side_l, side_r = 0, 0
   elseif col == 2 then side_l, side_r = 1, 0
@@ -87,48 +69,26 @@ function renderer:draw_tile(x, y)
   elseif col == 12 then side_l, side_r = 1, 0
   elseif col == 8 then side_l, side_r = 2, 0
   else side_l, side_r = max(0, col - 1), max(0, col - 2) end
-
-  -- sides
   if h > 0 then
     for i = 0, hpx do
       line(sx - hw, sy + i, sx, sy + hh + i, side_l)
       line(sx, sy + hh + i, sx + hw, sy + i, side_r)
     end
   end
-
-  -- top face
   diamond(sx, sy, hw, hh, col)
-
-  -- pulsing glow for special tiles
   if not is_move and not is_attack then
     if tile.type == "spawn" then
-      -- ping-pong pulse: small -> full -> small -> off -> small -> ...
-      local t = (time() * 0.7) % 1  -- faster cycle
-      local phase
-      if t < 0.5 then
-        phase = t * 2  -- 0 to 1
-      else
-        phase = (1 - t) * 2  -- 1 to 0
-      end
-
+      local t = (time() * 0.7) % 1
+      local phase = t < 0.5 and t * 2 or (1 - t) * 2
       if phase > 0.66 then
-        -- full: outer + inner
         diamond(sx, sy, hw * 0.6, hh * 0.6, 13)
         diamond(sx, sy, hw * 0.3, hh * 0.3, 12)
       elseif phase > 0.33 then
-        -- just inner
         diamond(sx, sy, hw * 0.3, hh * 0.3, 12)
       end
-      -- else: nothing
     elseif tile.type == "goal" then
       local t = (time() * 0.7) % 1
-      local phase
-      if t < 0.5 then
-        phase = t * 2
-      else
-        phase = (1 - t) * 2
-      end
-
+      local phase = t < 0.5 and t * 2 or (1 - t) * 2
       if phase > 0.66 then
         diamond(sx, sy, hw * 0.6, hh * 0.6, 8)
         diamond(sx, sy, hw * 0.3, hh * 0.3, 9)
@@ -137,18 +97,15 @@ function renderer:draw_tile(x, y)
       end
     end
   end
-
-  -- outline
   line(sx, sy - hh, sx + hw, sy, 0)
   line(sx + hw, sy, sx, sy + hh, 0)
   line(sx, sy + hh, sx - hw, sy, 0)
   line(sx - hw, sy, sx, sy - hh, 0)
-
   if h > 0 then
-    line(sx - hw, sy, sx - hw, sy + hpx, outline_col)
-    line(sx + hw, sy, sx + hw, sy + hpx, outline_col)
-    line(sx - hw, sy + hpx, sx, sy + hh + hpx, outline_col)
-    line(sx, sy + hh + hpx, sx + hw, sy + hpx, outline_col)
+    line(sx - hw, sy, sx - hw, sy + hpx, 0)
+    line(sx + hw, sy, sx + hw, sy + hpx, 0)
+    line(sx - hw, sy + hpx, sx, sy + hh + hpx, 0)
+    line(sx, sy + hh + hpx, sx + hw, sy + hpx, 0)
   end
 end
 
@@ -156,42 +113,25 @@ function renderer:draw_unit(u)
   local h = grid:get_height(flr(u.tx + 0.5), flr(u.ty + 0.5))
   local sx, sy = camera:iso_pos(u.tx, u.ty, h)
   local z = camera:get_zoom_scale()
-
-  -- shadow
-  ovalfill(sx - 4 * z, sy + 1, sx + 4 * z, sy + 3 * z, 0)
-
-  -- get sprite frame
   local spr_id = sprites:get_sprite(u)
-
-  -- draw sprite centered, scaled
-  -- 16x16 sprites: 8 per row
   local sw, sh = 16 * z, 16 * z
   local spr_x = (spr_id % 8) * 16
   local spr_y = flr(spr_id / 8) * 16
 
-  sspr(
-    spr_x, spr_y,  -- sprite position in sheet
-    16, 16,        -- source size
-    sx - sw/2, sy - sh,  -- dest position (centered, above shadow)
-    sw, sh         -- dest size
-  )
+  ovalfill(sx - 4 * z, sy - 3, sx + 4 * z, sy + 1 * z + 1, 0)
 
-  -- health bar (only if damaged) - slim version
+  sspr(spr_x, spr_y, 16, 16, sx - sw/2, sy - sh, sw, sh)
+
   if u.hp < u.max_hp then
     local bw, by = 12 * z, sy - sh - 3 * z
-    -- border (black outline) - 3px total height
     rectfill(sx - bw/2 - 1, by - 1, sx + bw/2 + 1, by + 1, 0)
-    -- background - 1px inner
     line(sx - bw/2, by, sx + bw/2, by, 5)
-    -- health fill - 1px
     local hpcol = u.team == "player" and 11 or 8
     local fill_w = bw * u.hp / u.max_hp
     if fill_w > 0 then
       line(sx - bw/2, by, sx - bw/2 + fill_w, by, hpcol)
     end
   end
-
-  -- acted indicator
   if u.team == "player" and u.acted then
     local zy = sy - sh - 3 * z
     print("z", sx - 1, zy, 5)
@@ -202,48 +142,37 @@ end
 function renderer:draw_cursor()
   local cx, cy = cursor.x, cursor.y
   if not grid:get_tile(cx, cy) then return end
-
   local h = grid:get_height(cx, cy)
   local sx, sy = camera:iso_pos(cx, cy, h)
   local z = camera:get_zoom_scale()
   local expand = 1 + sin(time() * 3) * 0.15
   local hw, hh = (grid.tile_w / 2) * z * expand, (grid.tile_h / 2) * z * expand
   local len = 2 * z
-
-  -- occlusion check - only hide if adjacent tile is taller AND in front
   local cur_depth = camera:get_depth(cx, cy)
   local function occluded(dx, dy)
     local ax, ay = cx + dx, cy + dy
     if not grid:is_valid(ax, ay) then return false end
     local adj_h = grid:get_height(ax, ay)
     local adj_d = camera:get_depth(ax, ay)
-    -- must be in front (higher depth) and taller
     return adj_d > cur_depth and adj_h > h
   end
-
   local rot = flr(camera.rot_tween + 0.5) % 4
   local dirs = {{1,0,0,1}, {0,1,-1,0}, {-1,0,0,-1}, {0,-1,1,0}}
   local d = dirs[rot + 1]
-
-  -- right/left only check immediate neighbors
   local occ_r = occluded(d[1], d[2])
   local occ_l = occluded(d[3], d[4])
-  -- bottom only hides if the diagonal front tile is taller
   local occ_b = occluded(d[1]+d[3], d[2]+d[4])
   local occ_t = units:at(cx, cy)
-
-  -- segment data: corner x/y offsets, line direction
   local segs = {
-    {0, -hh, -len, len*0.5, occ_t},      -- top_left
-    {0, -hh, len, len*0.5, occ_t},       -- top_right
-    {hw, 0, -len, -len*0.5, occ_r},      -- right_top
-    {hw, 0, -len, len*0.5, occ_r},       -- right_bottom
-    {0, hh, -len, -len*0.5, occ_b},      -- bottom_right
-    {0, hh, len, -len*0.5, occ_b},       -- bottom_left
-    {-hw, 0, len, -len*0.5, occ_l},      -- left_bottom
-    {-hw, 0, len, len*0.5, occ_l}        -- left_top
+    {0, -hh, -len, len*0.5, occ_t},
+    {0, -hh, len, len*0.5, occ_t},
+    {hw, 0, -len, -len*0.5, occ_r},
+    {hw, 0, -len, len*0.5, occ_r},
+    {0, hh, -len, -len*0.5, occ_b},
+    {0, hh, len, -len*0.5, occ_b},
+    {-hw, 0, len, -len*0.5, occ_l},
+    {-hw, 0, len, len*0.5, occ_l}
   }
-
   for s in all(segs) do
     if not s[5] then
       local px, py = sx + s[1], sy + s[2]
@@ -257,15 +186,11 @@ function renderer:draw_markers()
     {x = grid.spawn_x, y = grid.spawn_y, col = 12},
     {x = grid.goal_x, y = grid.goal_y, col = 9}
   }
-  -- crystal outline offsets: {width, y_offsets...}
   local outline = {{0,-7}, {1,-6}, {2,-5,-4}, {3,-3,-2,-1}, {4,0,1}, {3,2,3,4}, {2,5,6}, {1,7}, {0,8}}
-
   for m in all(markers) do
     local h = grid:get_height(m.x, m.y)
     local sx, sy = camera:iso_pos(m.x, m.y, h)
     local cy = sy - 18 + sin(time() * 2) * 2
-
-    -- outline
     for o in all(outline) do
       local w = o[1]
       for i = 2, #o do
@@ -273,8 +198,6 @@ function renderer:draw_markers()
         if w > 0 then pset(sx + w, cy + o[i], 0) end
       end
     end
-
-    -- fill
     pset(sx, cy - 6, m.col)
     rectfill(sx - 1, cy - 5, sx + 1, cy - 4, m.col)
     rectfill(sx - 2, cy - 3, sx + 2, cy - 1, m.col)

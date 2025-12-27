@@ -3,9 +3,7 @@
 bindings = {
   did_rotate = false,
   did_zoom = false,
-  show_markers = false,
-  o_hold_time = 0,
-  o_hold_delay = 15  -- frames before markers show
+  show_markers = false
 }
 
 function bindings:bind_select()
@@ -141,13 +139,4 @@ function bindings:bind_options_menu()
       end
     end
   })
-end
-
-function bindings:update()
-  if btn(4) then
-    self.o_hold_time = min(self.o_hold_time + 1, self.o_hold_delay)
-  else
-    self.o_hold_time = 0
-  end
-  self.show_markers = self.o_hold_time >= self.o_hold_delay
 end

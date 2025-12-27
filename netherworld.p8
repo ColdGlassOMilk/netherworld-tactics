@@ -12,6 +12,7 @@ __lua__
 -- system
 ----------
 #include src/sys/input.lua
+#include src/sys/state.lua
 #include src/sys/tween.lua
 #include src/sys/menu.lua
 #include src/sys/camera.lua
@@ -21,7 +22,6 @@ __lua__
 #include src/sys/movement.lua
 #include src/sys/combat.lua
 #include src/sys/ai.lua
-#include src/sys/bindings.lua
 #include src/sys/actions.lua
 #include src/sys/renderer.lua
 #include src/sys/sprites.lua
