@@ -115,12 +115,12 @@ function game:start_player_phase()
       u.orig_y = u.deployed and u.y or -1
     end
   end
-  self:msg("player phase")
+  self:msg("player turn")
   self.fsm:switch("select")
 end
 
 function game:start_enemy_phase()
-  self:msg("enemy phase")
+  self:msg("enemy turn")
   self.fsm:switch("enemy")
   self.enemy_queue = {}
   for u in all(units.list) do
