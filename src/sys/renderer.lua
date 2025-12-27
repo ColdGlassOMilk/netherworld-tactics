@@ -142,42 +142,35 @@ end
 function renderer:draw_cursor()
   local cx, cy = cursor.x, cursor.y
   if not grid:get_tile(cx, cy) then return end
+
   local h = grid:get_height(cx, cy)
   local sx, sy = camera:iso_pos(cx, cy, h)
   local z = camera:get_zoom_scale()
   local expand = 1 + sin(time() * 3) * 0.15
   local hw, hh = (grid.tile_w / 2) * z * expand, (grid.tile_h / 2) * z * expand
-  local len = 2 * z
+  local len, l = 2 * z, z
+
   local cur_depth = camera:get_depth(cx, cy)
-  local function occluded(dx, dy)
+  local function occ(dx, dy)
     local ax, ay = cx + dx, cy + dy
     if not grid:is_valid(ax, ay) then return false end
-    local adj_h = grid:get_height(ax, ay)
-    local adj_d = camera:get_depth(ax, ay)
-    return adj_d > cur_depth and adj_h > h
+    return camera:get_depth(ax, ay) > cur_depth and grid:get_height(ax, ay) > h
   end
+
   local rot = flr(camera.rot_tween + 0.5) % 4
-  local dirs = {{1,0,0,1}, {0,1,-1,0}, {-1,0,0,-1}, {0,-1,1,0}}
-  local d = dirs[rot + 1]
-  local occ_r = occluded(d[1], d[2])
-  local occ_l = occluded(d[3], d[4])
-  local occ_b = occluded(d[1]+d[3], d[2]+d[4])
-  local occ_t = units:at(cx, cy)
-  local segs = {
-    {0, -hh, -len, len*0.5, occ_t},
-    {0, -hh, len, len*0.5, occ_t},
-    {hw, 0, -len, -len*0.5, occ_r},
-    {hw, 0, -len, len*0.5, occ_r},
-    {0, hh, -len, -len*0.5, occ_b},
-    {0, hh, len, -len*0.5, occ_b},
-    {-hw, 0, len, -len*0.5, occ_l},
-    {-hw, 0, len, len*0.5, occ_l}
-  }
-  for s in all(segs) do
-    if not s[5] then
-      local px, py = sx + s[1], sy + s[2]
-      oline(px, py, px + s[3], py + s[4], 10)
-    end
+  local d = ({{1,0,0,1}, {0,1,-1,0}, {-1,0,0,-1}, {0,-1,1,0}})[rot + 1]
+
+  if not units:at(cx, cy) then
+    oline(sx, sy-hh, sx-len, sy-hh+l, 10) oline(sx, sy-hh, sx+len, sy-hh+l, 10)
+  end
+  if not occ(d[1], d[2]) then
+    oline(sx+hw, sy, sx+hw-len, sy-l, 10) oline(sx+hw, sy, sx+hw-len, sy+l, 10)
+  end
+  if not occ(d[1]+d[3], d[2]+d[4]) then
+    oline(sx, sy+hh, sx-len, sy+hh-l, 10) oline(sx, sy+hh, sx+len, sy+hh-l, 10)
+  end
+  if not occ(d[3], d[4]) then
+    oline(sx-hw, sy, sx-hw+len, sy-l, 10) oline(sx-hw, sy, sx-hw+len, sy+l, 10)
   end
 end
 

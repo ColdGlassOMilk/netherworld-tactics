@@ -1,8 +1,8 @@
 -- cursor system
 
 cursor = {
-  x = 0,
-  y = 0
+  -- x = 0,
+  -- y = 0
 }
 
 function cursor:init()

@@ -1,16 +1,16 @@
 -- camera system
 
 camera = {
-  x = 0,
-  y = -20,
-  rot = 0,
-  rot_tween = 0,
-  zoom = 2,
-  zoom_tween = 2,
+  -- x = 0,
+  -- y = -20,
+  -- rot = 0,
+  -- rot_tween = 0,
+  -- zoom = 2,
+  -- zoom_tween = 2,
   zoom_levels = {1, 2, 3},  -- integer values only for clean pixel scaling
-  zooming = false,
-  rotating = false,
-  tween_target = nil,
+  -- zooming = false,
+  -- rotating = false,
+  -- tween_target = nil,
   cam_left = false
 }
 

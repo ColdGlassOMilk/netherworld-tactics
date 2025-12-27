@@ -1,9 +1,9 @@
 -- input bindings
 
 bindings = {
-  did_rotate = false,
-  did_zoom = false,
-  show_markers = false
+  -- did_rotate = false,
+  -- did_zoom = false,
+  -- show_markers = false
 }
 
 function bindings:bind_select()

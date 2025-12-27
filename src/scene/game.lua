@@ -1,16 +1,16 @@
 -- game scene
 
 game = {
-  floor = 1,
-  message = "",
-  msg_timer = 0,
-  action_queue = {},
-  enemy_queue = {},
-  selected = nil,
-  move_tiles = {},
-  attack_tiles = {},
-  action_menu = nil,
-  deploy_menu = nil
+  -- floor = 1,
+  -- message = "",
+  -- msg_timer = 0,
+  -- action_queue = {},
+  -- enemy_queue = {},
+  -- selected = nil,
+  -- move_tiles = {},
+  -- attack_tiles = {},
+  -- action_menu = nil,
+  -- deploy_menu = nil
 }
 
 function game:init()
@@ -217,7 +217,12 @@ function game:update()
   if self.msg_timer > 0 then self.msg_timer -= 1 end
   camera:update()
   sprites:update_all()
-  self.show_markers = btn(4)
+  if btn(4) then
+    self.o_hold_time = min((self.o_hold_time or 0) + 1, 15)
+  else
+    self.o_hold_time = 0
+  end
+  self.show_markers = self.o_hold_time >= 15
 end
 
 function game:draw()
