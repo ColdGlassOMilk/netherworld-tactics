@@ -61,14 +61,24 @@ function renderer:draw_tile(x, y)
   local is_attack = grid:tile_in_list(x, y, game.attack_tiles or {})
   if is_move then col = 12
   elseif is_attack then col = 8 end
+
+  -- side colors for 3d effect - these will also be palette swapped
+  -- left side slightly lighter, right side darker for depth
   local side_l, side_r = 0, 0
-  if col == 1 then side_l, side_r = 0, 0
-  elseif col == 2 then side_l, side_r = 1, 0
-  elseif col == 13 then side_l, side_r = 2, 1
-  elseif col == 14 then side_l, side_r = 13, 2
-  elseif col == 12 then side_l, side_r = 1, 0
-  elseif col == 8 then side_l, side_r = 2, 0
-  else side_l, side_r = max(0, col - 1), max(0, col - 2) end
+  if col == 1 then
+    side_l, side_r = 0, 0        -- darkest level
+  elseif col == 2 then
+    side_l, side_r = 1, 0        -- mid purple -> dark blue sides
+  elseif col == 13 then
+    side_l, side_r = 2, 1        -- high indigo -> purple/blue sides
+  elseif col == 12 then
+    side_l, side_r = 1, 0        -- move highlight (cyan)
+  elseif col == 8 then
+    side_l, side_r = 2, 0        -- attack highlight (red)
+  else
+    side_l, side_r = max(0, col - 1), max(0, col - 2)
+  end
+
   if h > 0 then
     for i = 0, hpx do
       line(sx - hw, sy + i, sx, sy + hh + i, side_l)

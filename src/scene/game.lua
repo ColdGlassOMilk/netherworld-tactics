@@ -226,14 +226,45 @@ function game:update()
 end
 
 function game:draw()
-  pal(1, 131, 1) pal(2, 129, 1) pal(5, 133, 1)
-  pal(13, 132, 1) pal(14, 143, 1) pal(15, 134, 1)
-  pal(8, 136, 1) pal(9, 137, 1) pal(10, 138, 1)
-  pal(11, 139, 1) pal(12, 140, 1)
+  -- reset palette at start of frame
+  pal()
   cls(0)
+  -- draw everything with normal colors first
   renderer:draw_all()
   ui:draw()
   if self.action_menu then self.action_menu:draw() end
   if self.deploy_menu then self.deploy_menu:draw() end
-  pal()
+  -- AFTER all drawing, apply screen palette swaps
+  -- this transforms displayed colors to extended palette
+  -- pal(original, extended, 1) where 1 = screen palette
+  --
+  -- extended palette (128-143):
+  -- 128: #291814 darkest brown    129: #111d35 darkest blue
+  -- 130: #422136 dark purple      131: #125359 dark teal
+  -- 132: #742f29 dark rust        133: #49333b dark mauve
+  -- 134: #a28879 tan              135: #f3ef7d pale yellow
+  -- 136: #be1250 magenta          137: #ff6c24 bright orange
+  -- 138: #a8e72e lime green       139: #00b543 dark green
+  -- 140: #065ab5 dark blue        141: #754665 dusty purple
+  -- 142: #ff6e59 coral            143: #ff9d81 peach
+  -- netherworld theme: dark, eerie, hellfire
+  -- tiles: deep netherworld colors
+  pal(1, 129, 1)   -- dark blue -> darkest blue (floor low)
+  pal(2, 130, 1)   -- dark purple -> dark purple (floor mid)
+  pal(13, 141, 1)  -- lavender -> dusty purple (floor high)
+  -- highlights
+  pal(12, 131, 1)  -- light blue -> dark teal (move tiles)
+  pal(8, 136, 1)   -- red -> magenta (attack tiles)
+  -- enemies - sickly/ghostly
+  pal(11, 139, 1)  -- green -> dark green
+  pal(3, 133, 1)   -- dark green -> dark mauve
+  -- vex (warrior) - hellfire orange/yellow
+  pal(9, 137, 1)   -- orange -> bright orange
+  pal(10, 135, 1)  -- yellow -> pale yellow
+  -- nyx (mage) - mystical pink
+  pal(14, 142, 1)  -- pink -> coral
+  pal(15, 143, 1)  -- peach -> peach
+  -- ui adjustments
+  pal(5, 133, 1)   -- dark gray -> dark mauve
+  pal(6, 134, 1)   -- light gray -> tan
 end

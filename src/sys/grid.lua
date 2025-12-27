@@ -19,8 +19,15 @@ end
 function grid:generate()
   self.tiles = {}
 
-  -- generate terrain with varying heights
-  -- netherworld palette: consistent colors per height
+  -- generate terrain with varying heights and colors
+  -- netherworld palette with extended colors for variety:
+  -- base colors: 1 (dark blue), 2 (dark purple), 13 (lavender)
+  -- extended via mapping: 3->129 (darkest blue), 4->130 (dark purple), 15->131 (dark teal)
+  --
+  -- height 0: darkest colors (1, 3)
+  -- height 1: mid colors (2, 4)
+  -- height 2: lighter colors (13, 15)
+
   for y = 0, self.h - 1 do
     self.tiles[y] = {}
     for x = 0, self.w - 1 do
@@ -47,14 +54,14 @@ function grid:generate()
     end
   end
 
-  -- place spawn point - glowing blue
+  -- place spawn point
   self.spawn_x = flr(rnd(self.w))
   self.spawn_y = flr(rnd(self.h))
   self.tiles[self.spawn_y][self.spawn_x].height = 0
   self.tiles[self.spawn_y][self.spawn_x].col = 1
   self.tiles[self.spawn_y][self.spawn_x].type = "spawn"
 
-  -- place goal (away from spawn) - glowing red/orange
+  -- place goal (away from spawn)
   local gx, gy
   repeat
     gx = flr(rnd(self.w))

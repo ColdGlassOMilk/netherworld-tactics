@@ -14,12 +14,30 @@ function ui:draw()
 
   -- unit info panel (hovered)
   local u = cursor:get_unit()
+  local tile = cursor:get_tile()
+
   if u then
+    -- show unit info
     rectfill(0, 111, 62, 127, 0)
     rectfill(0, 111, 62, 112, 2)
     rect(0, 111, 62, 127, 2)
-    print(u.name, 3, 114, u.col)
+    print(u.name, 3, 114, u.team == "player" and 14 or 8)
     print("hP:" .. u.hp .. "/" .. u.max_hp, 3, 121, 13)
+  elseif tile then
+    -- show tile info for special tiles
+    if tile.type == "spawn" then
+      rectfill(0, 111, 62, 127, 0)
+      rectfill(0, 111, 62, 112, 2)
+      rect(0, 111, 62, 127, 2)
+      print("sPAWN gATE", 3, 114, 12)
+      print("dEPLOY uNITS", 3, 121, 13)
+    elseif tile.type == "goal" then
+      rectfill(0, 111, 62, 127, 0)
+      rectfill(0, 111, 62, 112, 2)
+      rect(0, 111, 62, 127, 2)
+      print("eXIT gATE", 3, 114, 9)
+      print("tO nEXT fLOOR", 3, 121, 13)
+    end
   end
 
   -- selected unit panel
@@ -28,7 +46,7 @@ function ui:draw()
     rectfill(65, 111, 127, 127, 0)
     rectfill(65, 111, 127, 112, 2)
     rect(65, 111, 127, 127, 2)
-    print(su.name, 68, 114, su.col)
+    print(su.name, 68, 114, 14)
     print("aTK:" .. su.atk .. " dEF:" .. su.def, 68, 121, 13)
   end
 
