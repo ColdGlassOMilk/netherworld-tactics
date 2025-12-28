@@ -7,11 +7,20 @@ function menu:new(items, opts)
     items = items or {}, sel = 1, active = false,
     x = opts.x or 80, y = opts.y or 20,
     parent = nil, closeable = opts.closeable != false,
-    on_cancel = opts.on_cancel
+    on_cancel = opts.on_cancel,
+    tween_x = 160
   }, self)
 end
 function menu:show(parent)
   self.sel, self.active, self.parent = 1, true, parent
+  self.tween_x = 160
+  -- calc width to set proper target
+  local w = 44
+  for _, it in pairs(self.items) do
+    w = max(w, #self:get_label(it) * 4 + 14)
+  end
+  self.final_x = min(self.x, 127 - w)
+  tween:new(self, {tween_x = self.final_x}, 10, {ease = tween.ease.out_back})
   input:push()
   input:bind({
     [2] = function() self:nav(-1) end,
@@ -24,7 +33,11 @@ end
 function menu:hide()
   if not self.active then return end
   self.active = false
+  self.hiding = true
   input:pop()
+  tween:new(self, {tween_x = 160}, 12, {ease = tween.ease.out_quad, on_complete = function()
+    self.hiding = false
+  end})
   sfx(7)
 end
 function menu:cancel()
@@ -59,13 +72,13 @@ function menu:select()
   end
 end
 function menu:draw()
-  if not self.active then return end
+  if not self.active and not self.hiding then return end
   local w = 44
   for _, it in pairs(self.items) do
     w = max(w, #self:get_label(it) * 4 + 14)
   end
   local h = #self.items * 10 + 3
-  local dx, dy = mid(1, self.x, 127 - w), mid(1, self.y, 127 - h)
+  local dx, dy = self.tween_x, mid(1, self.y, 127 - h)
   local it = self.items[self.sel]
   local sub_active = it.sub_menu and it.sub_menu.active
   rectfill(dx, dy, dx + w, dy + h, 0)

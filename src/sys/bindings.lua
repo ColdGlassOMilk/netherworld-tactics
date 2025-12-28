@@ -71,7 +71,7 @@ function bindings:bind_deploy_menu()
    end
    game.phase="select"
    bindings:bind_select()
-   sfx(0)
+  --  sfx(0)
   end,
   [5]=function()if game.deploy_menu then game.deploy_menu:select()end end
  })
@@ -92,7 +92,7 @@ function bindings:bind_options_menu()
   [4]=function()
    if game.options_menu then game.options_menu:hide()end
    bindings:bind_action_menu()
-   sfx(0)
+  --  sfx(0)
   end,
   [5]=function()
    if game.options_menu and game.options_menu.active then

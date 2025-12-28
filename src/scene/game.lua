@@ -60,13 +60,34 @@ function game:init_states()
   },
   move={
    bindings={
-    [0]=function()cursor:move(-1,0)end,
-    [1]=function()cursor:move(1,0)end,
-    [2]=function()cursor:move(0,-1)end,
-    [3]=function()cursor:move(0,1)end,
-    [4]=function()actions:cancel_move()end,
+    [0]=function()
+     if btn(4) then camera:rotate(1)game.did_rotate=true
+     else cursor:move(-1,0)end
+    end,
+    [1]=function()
+     if btn(4) then camera:rotate(-1)game.did_rotate=true
+     else cursor:move(1,0)end
+    end,
+    [2]=function()
+     if btn(4) then camera:change_zoom(1)game.did_zoom=true
+     else cursor:move(0,-1)end
+    end,
+    [3]=function()
+     if btn(4) then camera:change_zoom(-1)game.did_zoom=true
+     else cursor:move(0,1)end
+    end,
+    [4]=function()
+     if not(game.did_rotate or game.did_zoom)then
+      -- only cancel if cursor is on the selected unit
+      if game.selected and cursor.x==game.selected.x and cursor.y==game.selected.y then
+       actions:cancel_move()
+      end
+     end
+     game.did_rotate,game.did_zoom=false,false
+    end,
     [5]=function()actions:confirm_move()end
    },
+   init=function()game.did_rotate,game.did_zoom=false,false end,
    exit=function()game.move_tiles={}end
   },
   target={
@@ -106,6 +127,22 @@ function game:start_player_phase()
  end
  self:msg"player turn"
  self.fsm:switch"select"
+
+ -- center on first deployed player, or spawn if none deployed
+ local first_player=nil
+ for u in all(units.list) do
+  if u.team=="player" and u.deployed then
+   first_player=u
+   break
+  end
+ end
+ if first_player then
+  cursor.x,cursor.y=first_player.x,first_player.y
+  camera:center(cursor.x,cursor.y)
+ else
+  cursor.x,cursor.y=grid.spawn_x,grid.spawn_y
+  camera:center(cursor.x,cursor.y)
+ end
 end
 
 function game:start_enemy_phase()
@@ -209,6 +246,7 @@ function game:update()
  if self.msg_timer>0 then self.msg_timer-=1 end
  camera:update()
  sprites:update_all()
+ ai:update()
  if btn(4) then
   self.o_hold_time=min((self.o_hold_time or 0)+1,15)
  else
@@ -218,24 +256,24 @@ function game:update()
 end
 
 function game:draw()
- pal()
- cls()
- renderer:draw_all()
- ui:draw()
- if self.action_menu then self.action_menu:draw() end
- if self.deploy_menu then self.deploy_menu:draw() end
+  pal()
+  cls()
+  renderer:draw_all()
+  ui:draw()
+  if self.action_menu then self.action_menu:draw() end
+  if self.deploy_menu then self.deploy_menu:draw() end
 
- pal(1,129,1)
- pal(2,130,1)
- pal(13,141,1)
- pal(12,131,1)
- pal(8,136,1)
- pal(11,139,1)
- pal(3,133,1)
- pal(9,137,1)
- pal(10,135,1)
- pal(14,142,1)
- pal(15,143,1)
- pal(5,133,1)
- pal(6,134,1)
+  pal(1,129,1)
+  pal(2,130,1)
+  pal(13,141,1)
+  pal(12,131,1)
+  pal(8,136,1)
+  pal(11,139,1)
+  pal(3,133,1)
+  pal(9,137,1)
+  pal(10,135,1)
+  pal(14,142,1)
+  pal(15,143,1)
+  pal(5,133,1)
+  pal(6,134,1)
 end
