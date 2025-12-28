@@ -4,7 +4,13 @@ input = {
   handlers, stack = {}, {}
 }
 
+function input:blocked()
+  phase = game.fsm.current
+  return phase != "select" and phase != "move" and phase != "target" or game.transitioning
+end
+
 function input:update()
+  if self:blocked() then return end
   for id = 0, 5 do
     if btnp(id) and self.handlers[id] then
       self.handlers[id]()

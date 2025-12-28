@@ -28,7 +28,6 @@ function actions:show_deploy_menu()
   if u.team=="player" and not u.deployed then
    add(items,{label=u.name,action=function()
     game.deploy_menu:hide()
-    game.deploy_menu=nil
     self:deploy_unit(u)
    end})
   end
@@ -66,7 +65,6 @@ function actions:show_action_menu()
   if tile and tile.type=="goal" then
    add(items,{label="escape!",action=function()
     game.action_menu:hide()
-    game.action_menu=nil
     game.selected=nil
     game.attack_tiles={}
     game:next_floor()
@@ -74,13 +72,11 @@ function actions:show_action_menu()
   end
   add(items,{label="attack",action=function()
    game.action_menu:hide()
-   game.action_menu=nil
    game.fsm:switch"target"
    self:cycle_target(0)
   end,enabled=function()return has_target end})
   add(items,{label="wait",action=function()
    game.action_menu:hide()
-   game.action_menu=nil
    u.waiting=true
    game.selected=nil
    game.attack_tiles={}
@@ -91,14 +87,12 @@ function actions:show_action_menu()
   return"execute ("..#game.action_queue..")"
  end,action=function()
   game.action_menu:hide()
-  game.action_menu=nil
   game.selected=nil
   game.attack_tiles={}
   game:execute_turn()
  end,enabled=function()return #game.action_queue>0 end})
  add(items,{label="end turn",action=function()
   game.action_menu:hide()
-  game.action_menu=nil
   game.selected=nil
   game.attack_tiles={}
   game:execute_and_end_turn()
@@ -113,7 +107,6 @@ function actions:show_action_menu()
  },{x=90,y=26})})
 
  game.action_menu=menu:new(items,{x=80,y=16,on_cancel=function()
-  game.action_menu=nil
   game.attack_tiles={}
   if game.selected then game.selected.waiting=true end
   game.selected=nil

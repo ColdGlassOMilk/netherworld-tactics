@@ -16,6 +16,7 @@ game = {
 function game:init()
   self.floor = 1
   self.action_queue = {}
+  self.transitioning = false
   camera:init()
   grid:init()
   units:init()
@@ -208,6 +209,7 @@ function game:process_next_action()
 end
 
 function game:next_floor()
+ self.transitioning=true
  self.floor+=1
  self:msg("floor "..self.floor.."!")
  for u in all(units.list) do
@@ -227,6 +229,7 @@ function game:next_floor()
    camera:reset()
    cursor.x,cursor.y=grid.spawn_x,grid.spawn_y
    camera:center(cursor.x,cursor.y,true)
+   self.transitioning=false
    self:start_player_phase()
   end
  })
@@ -256,24 +259,24 @@ function game:update()
 end
 
 function game:draw()
-  pal()
-  cls()
-  renderer:draw_all()
-  ui:draw()
-  if self.action_menu then self.action_menu:draw() end
-  if self.deploy_menu then self.deploy_menu:draw() end
+ pal()
+ cls()
+ renderer:draw_all()
+ ui:draw()
+ if self.action_menu then self.action_menu:draw() end
+ if self.deploy_menu then self.deploy_menu:draw() end
 
-  pal(1,129,1)
-  pal(2,130,1)
-  pal(13,141,1)
-  pal(12,131,1)
-  pal(8,136,1)
-  pal(11,139,1)
-  pal(3,133,1)
-  pal(9,137,1)
-  pal(10,135,1)
-  pal(14,142,1)
-  pal(15,143,1)
-  pal(5,133,1)
-  pal(6,134,1)
+ pal(1,129,1)
+ pal(2,130,1)
+ pal(13,141,1)
+ pal(12,131,1)
+ pal(8,136,1)
+ pal(11,139,1)
+ pal(3,133,1)
+ pal(9,137,1)
+ pal(10,135,1)
+ pal(14,142,1)
+ pal(15,143,1)
+ pal(5,133,1)
+ pal(6,134,1)
 end

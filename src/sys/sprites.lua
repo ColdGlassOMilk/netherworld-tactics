@@ -14,7 +14,7 @@ end
 function sprites:play(u,a,cb)
   local anim=self.anims[u.name]
   if not anim or not anim[a] then u.anim=a if cb then cb() end return end
-  u.anim = anim_name
+  u.anim = a
   u.anim_frame, u.anim_timer = 0, 0
   u.anim_done, u.anim_callback = false, cb
 end
