@@ -1,8 +1,7 @@
 -- input
 
 input = {
-  handlers = {},
-  stack = {}
+  handlers, stack = {}, {}
 }
 
 function input:update()

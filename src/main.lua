@@ -11,6 +11,5 @@ function _update()
 end
 
 function _draw()
-  cls(8)
   game:draw()
 end

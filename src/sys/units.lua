@@ -15,8 +15,6 @@ function units:init()
     hp = 20, max_hp = 20,
     atk = 5, def = 2, spd = 10,
     move = 5, range = 1,
-    col = 9,  -- orange
-    col2 = 10, -- yellow highlight
     x = -1, y = -1,
     tx = -1, ty = -1,
     deployed = false,
@@ -33,8 +31,6 @@ function units:init()
     hp = 12, max_hp = 12,
     atk = 8, def = 0, spd = 8,
     move = 4, range = 2,
-    col = 14,  -- pink
-    col2 = 15, -- peach highlight
     x = -1, y = -1,
     tx = -1, ty = -1,
     deployed = false,
@@ -86,9 +82,7 @@ function units:spawn_enemies(floor)
       max_hp = 5 + floor * 2,
       atk = 2 + flr(floor / 2),
       def = 0, spd = 6,
-      move = 2, range = 1,
-      col = 11,  -- green (ghostly)
-      col2 = 3   -- dark green
+      move = 2, range = 1
     })
   end
 end

@@ -11,7 +11,7 @@ function cursor:init()
 end
 
 function cursor:move(dx, dy)
-  local gx, gy = 0, 0
+  local nx, ny = self.x, self.y
   local rot = camera.rot
 
   -- rotate input based on camera
@@ -19,15 +19,22 @@ function cursor:move(dx, dy)
     dx, dy = -dy, dx
   end
 
+  local gx, gy = 0, 0
   if camera.cam_left then
     gx, gy = dx, dy
   else
-    gx = dy
-    gy = -dx
+    gx, gy = dy, -dx
   end
 
-  self.x = mid(0, self.x + gx, grid.w - 1)
-  self.y = mid(0, self.y + gy, grid.h - 1)
+  nx = mid(0, self.x + gx, grid.w - 1)
+  ny = mid(0, self.y + gy, grid.h - 1)
+
+  -- lock cursor to move tiles during move phase
+  if game.fsm.current == "move" and not grid:tile_in_list(nx, ny, game.move_tiles) then
+    return
+  end
+
+  self.x, self.y = nx, ny
   camera:center(self.x, self.y)
   sfx(0)
 end
