@@ -30,7 +30,7 @@ function menu:show(parent)
   })
   sfx(6)
 end
-function menu:hide()
+function menu:hide(silent)
   if not self.active then return end
   self.active = false
   self.hiding = true
@@ -38,7 +38,7 @@ function menu:hide()
   tween:new(self, {tween_x = 160}, 12, {ease = tween.ease.out_quad, on_complete = function()
     self.hiding = false
   end})
-  sfx(7)
+  if not silent then sfx(7) end
 end
 function menu:cancel()
   self:hide()
@@ -62,11 +62,10 @@ function menu:select()
   if it.sub_menu then
     it.sub_menu:show(self)
   elseif it.action then
-    sfx(1)
     if it.action() then
-      self:hide()
+      self:hide(true)
       if self.parent and self.parent.active then
-        self.parent:hide()
+        self.parent:hide(true)
       end
     end
   end

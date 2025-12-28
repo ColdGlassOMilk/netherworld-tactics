@@ -15,7 +15,7 @@ function actions:select_or_menu()
    game.move_tiles=movement:calc_tiles(u)
    game.fsm:switch"move"
   end
-  -- sfx(1)
+  sfx(6)
  else
   game.selected=nil
   self:show_action_menu()
@@ -46,7 +46,7 @@ function actions:deploy_unit(u)
  game.selected=u
  game.move_tiles=movement:calc_tiles(u)
  game.fsm:switch"move"
---  sfx(1)
+ sfx(1)
 end
 
 function actions:show_action_menu()
@@ -108,6 +108,7 @@ function actions:show_action_menu()
    return"cam: "..(camera.cam_left and"left"or"right")
   end,action=function()
    camera.cam_left=not camera.cam_left
+   sfx(1)
   end}
  },{x=90,y=26})})
 
@@ -130,7 +131,7 @@ function actions:confirm_move()
  tween:new(u,{tx=u.x,ty=u.y},10,{ease=tween.ease.out_quad})
  game.fsm:switch"select"
  self:show_action_menu()
---  sfx(1)
+ sfx(1)
 end
 
 function actions:cancel_move()
@@ -161,7 +162,7 @@ function actions:confirm_target()
  game.selected=nil
  game.attack_tiles={}
  game.fsm:switch"select"
---  sfx(1)
+ sfx(1)
 end
 
 function actions:cancel_target()
