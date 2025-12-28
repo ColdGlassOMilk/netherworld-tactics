@@ -63,19 +63,19 @@ function actions:show_action_menu()
   end
   tile=grid:get_tile(u.x,u.y)
   if tile and tile.type=="goal" then
-   add(items,{label="escape!",action=function()
+   add(items,{label="nEXT fLOOR",action=function()
     game.action_menu:hide()
     game.selected=nil
     game.attack_tiles={}
     game:next_floor()
    end})
   end
-  add(items,{label="attack",action=function()
+  add(items,{label="aTTACK",action=function()
    game.action_menu:hide()
    game.fsm:switch"target"
    self:cycle_target(0)
   end,enabled=function()return has_target end})
-  add(items,{label="wait",action=function()
+  add(items,{label="wAIT",action=function()
    game.action_menu:hide()
    u.waiting=true
    game.selected=nil
@@ -84,22 +84,22 @@ function actions:show_action_menu()
   end,enabled=function()return not u.waiting end})
  end
  add(items,{label=function()
-  return"execute ("..#game.action_queue..")"
+  return"eXECUTE ("..#game.action_queue..")"
  end,action=function()
   game.action_menu:hide()
   game.selected=nil
   game.attack_tiles={}
   game:execute_turn()
  end,enabled=function()return #game.action_queue>0 end})
- add(items,{label="end turn",action=function()
+ add(items,{label="eND tURN",action=function()
   game.action_menu:hide()
   game.selected=nil
   game.attack_tiles={}
   game:execute_and_end_turn()
  end})
- add(items,{label="options",sub_menu=menu:new({
+ add(items,{label="oPTIONS",sub_menu=menu:new({
   {label=function()
-   return"cam: "..(camera.cam_left and"left"or"right")
+   return"cONTROLS: "..(camera.cam_left and"lEFT"or"rIGHT")
   end,action=function()
    camera.cam_left=not camera.cam_left
    sfx(1)

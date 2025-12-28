@@ -10,7 +10,7 @@ function units:init()
   -- create player units
   -- vex: melee warrior - fiery orange/red
   local vex = {
-    name = "vex",
+    name = "vEX",
     team = "player",
     hp = 20, max_hp = 20,
     atk = 5, def = 2, spd = 10,
@@ -26,7 +26,7 @@ function units:init()
 
   -- nyx: ranged mage - mystical pink/magenta
   local nyx = {
-    name = "nyx",
+    name = "nYX",
     team = "player",
     hp = 12, max_hp = 12,
     atk = 8, def = 0, spd = 8,
@@ -76,7 +76,7 @@ function units:spawn_enemies(floor)
           not (x == grid.goal_x and y == grid.goal_y)
 
     self:spawn(x, y, {
-      name = "imp",
+      name = "zOMBIE wOLF",
       team = "enemy",
       hp = 5 + floor * 2,
       max_hp = 5 + floor * 2,

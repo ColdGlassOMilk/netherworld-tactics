@@ -1,9 +1,9 @@
 -- sprite animation system
 sprites={
   anims={
-    vex={idle={0,2,0.1,true}, move={2,2,0.2,true}, attack={4,2,0.25,false}, hurt={6,1,0.2,false}, dead={7,1,0,false}},
-    nyx={idle={8,2,0.1,true}, move={10,2,0.2,true}, attack={12,2,0.25,false}, hurt={14,1,0.2,false}, dead={15,1,0,false}},
-    imp={idle={16,2,0.15,true}, move={18,2,0.2,true}, attack={20,2,0.25,false}, hurt={22,1,0.2,false}, dead={23,1,0,false}}
+    ["vEX"]={idle={0,2,0.1,true}, move={2,2,0.2,true}, attack={4,2,0.25,false}, hurt={6,1,0.2,false}, dead={7,1,0,false}},
+    ["nYX"]={idle={8,2,0.1,true}, move={10,2,0.2,true}, attack={12,2,0.25,false}, hurt={14,1,0.2,false}, dead={15,1,0,false}},
+    ["zOMBIE wOLF"]={idle={16,2,0.15,true}, move={18,2,0.2,true}, attack={20,2,0.25,false}, hurt={22,1,0.2,false}, dead={23,1,0,false}}
   }
 }
 

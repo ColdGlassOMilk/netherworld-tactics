@@ -97,18 +97,16 @@ function renderer:draw_tile(x, y)
   diamond(sx, sy, hw, hh, col)
 
   -- spawn / goal effects
-  if not is_move and not is_attack then
-    if tile.type=="spawn" or tile.type=="goal" then
-      local t=(time()*0.7)%1
-      local phase=t<0.5 and t*2 or (1-t)*2
-      local c1, c2 = 0,0
-      if tile.type=="spawn" then c1,c2=13,12 else c1,c2=8,9 end
-      if phase>0.66 then
-        diamond(sx,sy,hw*0.6,hh*0.6,c1)
-        diamond(sx,sy,hw*0.3,hh*0.3,c2)
-      elseif phase>0.33 then
-        diamond(sx,sy,hw*0.3,hh*0.3,c2)
-      end
+  if tile.type=="spawn" or tile.type=="goal" then
+    local t=(time()*0.7)%1
+    local ph=t<0.5 and t*2 or (1-t)*2
+    local c1,c2=0,0
+    if tile.type=="spawn" then c1,c2=13,12 else c1,c2=8,9 end
+    if ph>0.66 then
+      diamond(sx,sy,hw*0.6,hh*0.6,c1)
+      diamond(sx,sy,hw*0.3,hh*0.3,c2)
+    elseif ph>0.33 then
+      diamond(sx,sy,hw*0.3,hh*0.3,c2)
     end
   end
 

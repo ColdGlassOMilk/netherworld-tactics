@@ -30,12 +30,11 @@ function cursor:move(dx, dy)
   ny = mid(0, self.y + gy, grid.h - 1)
 
   -- lock cursor to move tiles during move phase
-  -- but allow navigating through friendly units for QoL
+  -- but allow navigating through any unit for QoL
   if game.fsm.current == "move" then
     local in_move = grid:tile_in_list(nx, ny, game.move_tiles)
-    local friendly = units:at(nx, ny)
-    local is_friendly = friendly and friendly.team == "player"
-    if not in_move and not is_friendly then
+    local has_unit = units:at(nx, ny)
+    if not in_move and not has_unit then
       return
     end
   end
