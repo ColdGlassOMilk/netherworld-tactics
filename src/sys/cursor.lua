@@ -30,12 +30,20 @@ function cursor:move(dx, dy)
   ny = mid(0, self.y + gy, grid.h - 1)
 
   -- lock cursor to move tiles during move phase
-  -- but allow navigating through any unit for QoL
+  -- but allow navigating through units if the tile would otherwise be reachable
   if game.fsm.current == "move" then
     local in_move = grid:tile_in_list(nx, ny, game.move_tiles)
     local has_unit = units:at(nx, ny)
-    if not in_move and not has_unit then
-      return
+    if not in_move then
+      -- if there's a unit, check if tile is within movement range
+      if has_unit and game.selected then
+        local dist = abs(nx - game.selected.x) + abs(ny - game.selected.y)
+        if dist > game.selected.move then
+          return
+        end
+      else
+        return
+      end
     end
   end
 

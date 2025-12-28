@@ -6,7 +6,7 @@ input = {
 
 function input:blocked()
   phase = game.fsm.current
-  return phase != "select" and phase != "move" and phase != "target" or game.transitioning
+  return phase != "select" and phase != "move" and phase != "target" and phase != "gameover" or game.transitioning
 end
 
 function input:update()

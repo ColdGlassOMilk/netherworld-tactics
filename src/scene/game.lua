@@ -107,8 +107,7 @@ function game:init_states()
   gameover={
    bindings={
     [5]=function()
-     game.floor=1
-     units.list={}
+     game.floor,units.list=1,{}
      game:init()
     end
    }
@@ -126,7 +125,7 @@ function game:start_player_phase()
    u.orig_y=u.deployed and u.y or -1
   end
  end
- self:msg"player turn"
+ self:msg"pLAYER tURN"
  self.fsm:switch"select"
 
  -- center on first deployed player, or spawn if none deployed
@@ -147,7 +146,7 @@ function game:start_player_phase()
 end
 
 function game:start_enemy_phase()
- self:msg"enemy turn"
+ self:msg"eNEMY tURN"
  self.fsm:switch"enemy"
  self.enemy_queue={}
  for u in all(units.list) do
@@ -259,7 +258,7 @@ function game:update()
 end
 
 function game:draw()
- pal()
+--  pal()
  cls()
  renderer:draw_all()
  ui:draw()

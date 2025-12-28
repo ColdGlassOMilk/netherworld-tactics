@@ -20,7 +20,7 @@ function sprites:play(u,a,cb)
 end
 
 function sprites:update(u)
-  local anims=self.anims[u.name]
+  anims=self.anims[u.name]
   if not anims then return end
   local anim=anims[u.anim]
   if not anim or u.anim_done then return end

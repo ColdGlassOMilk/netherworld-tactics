@@ -7,7 +7,7 @@ function combat:calc_damage(a,t)
  hd_bonus=max(0,-hd)
  chain=0
  for u in all(units.list) do
-  if u!=a and u.team==a.team then
+  if a.team=="player"and u!=a and u.team=="player" then
    d=abs(u.x-t.x)+abs(u.y-t.y)
    if d<=u.range then chain+=flr(u.atk/2) end
   end
@@ -17,6 +17,7 @@ end
 
 function combat:do_attack(a,t,on_done)
  dmg=self:calc_damage(a,t)
+ if chain>0 then game:msg("cHAIN +"..chain) end
 
  ox,oy=a.tx,a.ty
  dx,dy=(t.x-a.x)*0.3,(t.y-a.y)*0.3
