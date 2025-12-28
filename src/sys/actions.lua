@@ -81,7 +81,7 @@ function actions:show_action_menu()
    game.selected=nil
    game.attack_tiles={}
    game.fsm:switch"select"
-  end,enabled=function()return not u.waiting end})
+  end,enabled=function()return u and not u.waiting end})
  end
  add(items,{label=function()
   return"eXECUTE ("..#game.action_queue..")"
@@ -128,8 +128,7 @@ function actions:confirm_move()
 end
 
 function actions:cancel_move()
- game.selected=nil
- game.attack_tiles={}
+ game.selected,game.attack_tiles=nil,{}
  game.fsm:switch"select"
  sfx(0)
 end
